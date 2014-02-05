@@ -11,6 +11,8 @@ Learning is like solving a puzzle. Each piece of information is a piece of that 
 
 They are experts, they can see patterns with less information and therefore build less context. It should not be encouraged for the creator of a framework to write the book about it, we have a system now where someone speaks and us mortals are left to decipher meaning from cryptic magic that we cannot follow. Experts are the furthest away from the beginners mindset, yet they are always the one's writing the *introduction* to resource x book. Part of me thinks this is an exploitable market inefficency, that the vanity of the software industry and desire for big names instead of better articulated content has lowered the expectations of what is possible from a coding book so far that someone could pull an Apple of coding resources, and just plain care more about the content and disrupt the industry. Part of me is just interested to see if this works, and await the feedback from anyone who comes across this.
 
+This is not an exhaustive documentation of every module in AngularJS, it is a story of how to use AngularJS to create things. I don't cover everything, but I cover everything that you need to create meaning.
+
 Questions you might have
 ===============
 - Why is this book written in coffeescript?

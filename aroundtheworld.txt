@@ -34,5 +34,50 @@ This is totally cool to do. But what does it mean when a controller is responsib
 
 * There are no hashes/maps/dictionaries they are 'objects' instead
 
-since $scope is a javascript object, we can set variables on it just like you can on any javascript object. $scope.message = "Hello, World!" is setting a message on an object. Now since the <p> tag exists inside of the context/scope of ExampleController, it can _implicity_ call an attribute on that $scope by wrapping a value in double curly brackets {{ ? }}. This is something you will see in angular a lot ( and is one of the main sources of a lot of the confusion around it ), that things are implicitly referenced all the time.
+since $scope is a javascript object, we can set variables on it just like you can on any javascript object. $scope.message = "Hello, World!" is setting a message on an object. Now since the <p> tag exists inside of the context/scope of ExampleController, it can _implicity_ call an attribute on that $scope by wrapping a value in double curly brackets {{ ? }}. This is something you will see in angular a lot ( and is one of the main sources of a lot of the confusion around it ), that things are implicitly referenced all the time. You could write
 
+<div ng-controller="ExampleController">
+  <p>{{$scope.message}}</p>
+</div>
+
+* This works!! We are explicitly calling the message attribute of the $scope object here, but we will see implicit calls very frequently in angular.
+
+This value is BOUND to the controller value. They are the same thing. This is one of the big paradigms of angular. That this data is bound to a single source. If we could just go to our javscript console and access the controller value on the $scope object we would see the value of the p change as well. Write the following code : ... get the value of $scope and change it's message from the console.
+
+Now the really interesting thing here, is what happens if we bind ANOTHER DOM element to the same controller variable. Yes, multiple DOM elements can be bound to the same value on the $scope of the controller.
+
+<div ng-controller="ExampleController">
+  <p>{{message}}</p>
+  <p>{{message}}</p>
+</div>
+
+You should see the words "Hello World" twice. Both of the values of those <p> are bound to the value of the $scope.message. Now if we change the scope.message again from the console we will see them both update. How is this working? EXPLAIN HOW THIS WORKS
+
+To demonstrate this, lets put two controllers.
+
+<div ng-controller="ExampleController1">
+  <p>{{message}}</p>
+</div>
+
+<div ng-controller="ExampleController2">
+  <p>{{message}}</p>
+</div>
+
+We have the same word "message", but it refers to different things. The {{message}} binding is bound to the message value on it's current scope, but that current scope is different since we have partitioned the DOM into different sections. The scope of ExampleController1 knows NOTHING about the scope of ExampleController2, and thus the variables are bound to different places in memory and have different values.
+
+So what does this binding really mean? It means if we change the value of the controller we change the value of the DOM. But the value of the controller can be changed from anywhere, there are multiple areas of attack. It could be due to DOM input from the user, or an API call, or a push notification from some external service. Just know that the DOM is only worried about rendering the controller's value right now, the controller is the one worrying about what that value should be. Lets look at an example of how to modify it.
+
+<div ng-controller="ExampleController">
+  <input type="text" ng-model="message" />
+  <p>{{message}}</p>
+</div>
+
+Woah? ng-model? Like a Rails Model? Before the wheels start spinning in your head, forget everything you know about what a "model" means in typical MVC frameworks like Rails. That is not what ng-model means when it calls something a model. ng-model means that the value of the element should be bound to the controller value on $scope. It is the same thing as writing {{message}} on the INSIDE of the tag, but here we're just adding that binding as an attribute on the element. It doesn't have anything to do with object oriented programming, or encapsulating data and behavior, it's just binding the value of the DOM element to the controller scope's value.
+
+So if we write in the input field, we can see that the paragraph value will change along with the value we're typing. This is because the ng-model binds the value of the input field to the controller $scope variable. When we change the input, it changes the $scope.message, because they are the same thing. But the {{message}} in the <p> tag is also the SAME thing as the controller value so when it changes the message changes. This is the idea of two-way data binding in angular. Your data is bound to the visual representation of it. with jQuery we would have to create the binding manually. We would have to listen for changes on the input field, and update the paragraph tag. This is a big idea in web dev nowadays, that data+viz are one and the same, we shouldn't have to manually manage the glue. The angular controller exists as an abstraction that creates that glue for us. So far we can think of the angular controller as a DSL for writing data-binding code in jQuery.
+
+$("input").on "keypress", (event) ->
+  inputValue = $(event.target).val()
+  $("p").text(inputValue)
+
+Lets step up the complexity an order of magnitude.
