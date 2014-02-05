@@ -1,0 +1,38 @@
+Around the World
+==========
+
+You need one thing. You need to include the angular.js library. You can either include the link to the cdn or include the library yourself, just like you would with jQuery or any javascript library. I'm going to be writing all examples in coffeescript, and include the underscore.js library as well for iterating collections.
+
+AngularJS is an HTML compiler. You can choose which section of the HTML you want to be compiled in the Angular context. `ng-app="Example"`, this is specifying that this section of the DOM is now going to be compiled into Angular, it is no longer plain old HTML, now it has powers. In some javascript file you need to add the following line. `angular.module("Example")`. This creates an angular module called Example, that maps to the ng-app line that you wrote in the HTML. Right now you have created an angular application. It doesn't do anything, and we're just dipping our toes into the world of Angular, but that's the flow. You specify a section of the DOM to move into angular land, then you create an angular.module with that app name. There's already some magic that happened. This is kind of going to be the flow of this book, I will explain how to do something, it will magically happen, then we will examine the magic and try to understand it. By the way, you can have multiple angular applications on the same page. For the most part though, you're going to only have one angular application on a page, and it will encompass the entire page. You can put it on the <html> tag, or the <body> tag. For the purpose of this book, we're going to be building single page applications in Angular, and we're going to put the ng-app on the <html>.
+
+The process that Angular goes through when it compiles the DOM is called 'bootstrapping'. Bootstrapping is a one time process, it is like compiling code, similar to how the coffeescript is compiled into javascript. The html with ng-markup stuff is compiled into angular code. The angular code is just javascript and it does so many things, but that's all that's happening. So lets do our hello world and get into our first in depth explanation of how it's even working.
+
+window.App = angular.module("Example")
+
+App.controller = "ExampleController", ($scope) ->
+  $scope.message = "Hello, World!"
+
+<div ng-controller="ExampleController">
+  <p>{{message}}</p>
+</div>
+
+There is already a lot going on here, so lets break down what is happening, and why it's happening. The core understanding of the "around the world" in Angular is one of the keys to getting the framework, and we have a piece of the cycle right in front of us.
+
+* Just a note. You might see in some angular tutorials that they write 'ctrl' instead of the word 'controller'. So an example of this might see the controller defined as 'ExampleCtrl'. DO NOT EVER DO THIS. This is an atrocious design decision. As a general rule you should never abbreviate variable names. It makes code unnecessarily un-readable. Writing Ctrl instead of Controller is hideous, there's no reason for it. Always write the full word, Angular is unequivocaly wrong about this and you should call controllers controllers not whatever ctrl is supposed to mean.
+
+Just like we specified a section of the DOM to be 'compiled into angular' by writing ng-app next to it, we are now partitioning the DOM even further. We are creating a controller and then partitioning the DOM into the section that the controller is responsible for. We can have multiple controllers within an ng-app.
+
+<div ng-controller="ExampleController1">
+  <p>{{message1}}</p>
+</div>
+
+<div ng-controller="ExampleController2">
+  <p>{{message2}}
+</div>
+
+This is totally cool to do. But what does it mean when a controller is responsible for a section of the DOM? This section of the DOM inherits the controller's scope. Scope is the secret sauce of Angular, it's the key to everything. Everything that happens inside that section of the DOM now happens within the context of the controller. The controller doesn't have to do anything, it often times does very very little. But there's this magical context that this section of the DOM now exists inside of, and it's called the 'scope'. In our hello world example, the <p>{{message}}</p> exists inside the scope of ExampleController. Now this magical context, is stored in the variable "$scope". $scope is a javascript object, and it has super powers.
+
+* There are no hashes/maps/dictionaries they are 'objects' instead
+
+since $scope is a javascript object, we can set variables on it just like you can on any javascript object. $scope.message = "Hello, World!" is setting a message on an object. Now since the <p> tag exists inside of the context/scope of ExampleController, it can _implicity_ call an attribute on that $scope by wrapping a value in double curly brackets {{ ? }}. This is something you will see in angular a lot ( and is one of the main sources of a lot of the confusion around it ), that things are implicitly referenced all the time.
+

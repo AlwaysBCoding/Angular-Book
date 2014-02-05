@@ -1,0 +1,23 @@
+The Theory Behind this Book
+=================
+
+This is as much a book about AngularJS as it is a book about self expression.
+
+They should be a form of expression. Books need to have personality. They need to have a voice, an opinion, something to say, a story to tell and a drive to tell it. They need to take risks, and be different, be ambitious and express your personality. Coding is that way, it is a means of expression. Some of the most extraordinary forms of expression come out of constraints. I've had the pleasure of studying American Sign Language at Gallaudet University over the past couple years, and am amazed at the solutions that the fluidity of expression can mean.
+
+Somehow, this does not resonate with coding books. Every book I read has a black and white animal on the front, the same font the same it... A lack of spine, it is coding propaganda. It is documentation in the form of a book. Instead, I want to write something that is a story first. It just happens to be about code. It's a story about how to use a new innovation to express yourself, and create things into the world that have never existed before. I think this is a better way to communicate ideas.
+
+Learning is like solving a puzzle. Each piece of information is a piece of that puzzle. These books, these documentation throw pieces of that puzzle at you with no context. It's like giving you isolated pieces of a puzzle and asking you to place it in the picture, it's impossible, you won't know what to do with it. So you throw it in the box, to come back to later, maybe. But instead if you can build up context. If you can place the corners, then build out the edge, then start to match pieces that look the same, then if you give someone a piece they have an idea of where it goes, you might even hit that moment where the piece you give someone fits right in the puzzle piece sized hole that they've been staring at for a while. But you have to earn that, you have to build that context for that transfer of the piece to be meaningful. Bombarding someone with information without building context isn't good enough, it doesn't add the value that the world needs from the programming book ecosystem.
+
+They are experts, they can see patterns with less information and therefore build less context. It should not be encouraged for the creator of a framework to write the book about it, we have a system now where someone speaks and us mortals are left to decipher meaning from cryptic magic that we cannot follow. Experts are the furthest away from the beginners mindset, yet they are always the one's writing the *introduction* to resource x book. Part of me thinks this is an exploitable market inefficency, that the vanity of the software industry and desire for big names instead of better articulated content has lowered the expectations of what is possible from a coding book so far that someone could pull an Apple of coding resources, and just plain care more about the content and disrupt the industry. Part of me is just interested to see if this works, and await the feedback from anyone who comes across this.
+
+Questions you might have
+===============
+- Why is this book written in coffeescript?
+  - Because it's more readable
+
+- Why do examples in this book use the underscore.js library by default?
+  - Because it's more readable
+
+- Why are you writing a book with only 2 years of coding experience?
+  - Because I'm closer to the beginner mindset and think that gives me an advantage

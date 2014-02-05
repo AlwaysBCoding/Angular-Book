@@ -1,0 +1,16 @@
+What Exactly IS AngularJS?
+===============
+
+Angular is an HTML compiler. It is a way to write declarative HTML that is "magically" compiled into executable functionality. The magic is not well explained. Angular is a different approach to writing web applications. It is also hard. But the things that make it hard, are the things that make it powerful. It requires an open mind.
+
+Maybe it's easier to think about what Angular is not. - JQuery. JQuery is not an HTML compiler. With JQuery you write your HTML and then write separate Javascript methods to watch the HTML and then perform actions when certain 'events' are triggered.
+
+What is "state" ?
+State is an important concept. The 'Rails' way of looking at web applications is 'state' is stored by going to different pages. If you want different actions, you go to a different page. State is also stored with a weird kind of handshake between the client and the server by way of browser sessions. A dashboard page might have different functionality depending on the application's state. In this case the state might be which user is logged in. But this information is stored in a browser session and tossed back and forth between client and server to show how to display the page. Think now of a desktop application like Photoshop. The application knows to display different views based on which layer is selected, and which tool you are currently dragging. But where is that information stored?  There has to be some variable like acitveLayer and activeTool somewhere so that the application knows the proper display to render, but there is no server or anything to pass that information to. All of that information needs to be stored on the client, in this case the desktop application, but there are no page refreshes, there's nothing to really 'reset' the state. So state is something that needs to be carefully managed and constantly updated. Single Page web Applications share this same idea of dynamic rendering of views without page refreshes so it shares similar questions of how you monitor and maintain the "state" of your application at any given time.
+
+What is "dependency injection" ?
+Dependency injection is mad confusing at first, but when you drill into it a little bit then it makes sense. It's better to pass the abstraction INTO the method instead of having the function responsible for knowing every specific combination of events. Then the abstraction can conform to a specific API that ANY object can implement. If that's the case then you can easily swap out implementations as long as they conform to a specific API. This is the idea of 'testable architecture' because you can swap out actual controllers, models, data, directives etc. with custom mock objects that you write so long as they conform to the API that you define. Testing is like this complex thing, but it's extraordinarily important. I'm going to talk a lot about it at the tail end of this book, so you've got something to look forward to ... yeaaaa.
+
+Angular has awful documentation. For some reason people are measured when they discuss this. I'm not. It's awful. It's unhelpful, for most purposes you can completely ignore it. You have to fend for yourself on this one.
+
+All you need is an open mind. I think that the journey is worth it.
