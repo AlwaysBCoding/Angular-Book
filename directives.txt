@@ -146,4 +146,38 @@ newScope = `angular.element(document).injector().get("$rootScope").$new()`
 The best way to understand this is to do it manually from our javascript console. Lets create a string "<h1>{{message}}</h1>" and store it in the variable messageTemplate.
 Then we can set the 'message' variable on our newScope equal to "Hello, World! - The hard way". `newScope.message = "Hello, World! - The hard way".
 
-Now the challenge is how we can manually take this scope and compile it against this template to create DOM. That's all that we want from Angular is to create DOM, but we HAVE to understand the process angular goes through to do it so we can harness it and use it for good.
+Now the challenge is how we can manually take this scope and compile it against this template to create DOM. That's all that we want from Angular is to create DOM, but we HAVE to understand the process angular goes through to do it so we can harness it and use it for good. The answer is through use of the $compile service.
+
+Remember the compile service is a function that takes two arguments, the template to be compiled and the scope to be compiled with. We can gain access to the $compile service through the angular injector, and lets store it in a variable called compileFn. `compileFn = angular.element(document).injector().get("$compile")`
+
+So now lets call the compile function and pass in the template and scope. We will store the result in a variable called dom. `dom = compileFn(messageTemplate)(newScope)`
+
+As you can see, the compile function compiles the messageTemplate string that we had INTO an angular object that is ready to be plugged into the dom. As you can see though, it looks like it still has the {{message}} variable, the variable from the scope doesn't look like it was passed in properly. It was though! The way angular works is that it has a "digest" cycle where it listens for any changes and then digests the dom to make sure that all bound variables display properly. However, when you manually bind things together outside of the angular context i.e. from the console ( or from an external library like jQuery ) angular doesn't realize that anything has changed and doesn't digest the dom. In cases like this you have to trigger a digest manually by calling `$digest()` on any scope object. In this case we can call it on newScope. `newScope.$digest()`. Now check out your dom variable. The message shows up properly. Just for fun lets add it to the DOM. `angular.element(document).find("body").append(dom)`. Hello world the hard way. But this is the process angular goes through, it takes a dom template with some sort of {{}} placeholders or variables inside attribute directives. And it compiles them against a scope that has the value for those variables and turns it into dom.
+
+So going back to our example of an isolated scope. The directive is getting compiled against an ISOLATED SCOPE that doesn't appear in our console because it only exists for the life of the compilation process. The directive gets compiled AGAINST the isolated scope then passed back into the dom and now lives in the context of the parent scope again. So we can define variables inside the custom scope object that we define that we want to get compiled into DOM. Isolate scope directives are meant to be completely reusable components, that's why they don't depend on their parents scope at all when they get compiled. Any variable that you want them to get compiled with needs to be PASSED INTO the directive.
+
+In this example we want to pass in a list of nba players into the players variable. And we do that when we call the directive in the dom.
+
+<searchable-table players="players"></searchable-table>. Note that we have access to the 'players' variable from the scope that we're calling the directive from, so we pass that IN to the directives isolated scope and now the directive can compile against it.
+
+In the directive we have to tell the directive to BIND to the VALUE of the players object, and we do that with an equals sign.
+
+App.directive("searchableTable", function() {
+
+  return {
+    scope: {
+      players: "="
+    },
+    restrict: "E",
+    template: "<table><tr ng-repeat='player in players'><td>{{player}}</td></tr></table>"
+  }
+
+});
+
+This is the hardest part of Angular in my opinion. Isolated scopes are pretty challenging to wrap your head around. I'm going to keep trying to throw tidbits of information at you to help you build the context to understand them, but for now lets move on to some other attributes you can use when defining directives.
+
+Transclusion
+=======
+
+When I first heard about angular transclusion was kind of the jokey buzzword that everyone used to talk about how confusing their documentation was.
+Angular didn't make it up! It's a real thing. And it's really useful sometimes. Consider the example of making a custom modal directive, seems like a great choice of something to be a reusable component. I want to make a modal that has the behavior of blacking out the screen, putting a dialog box on the screen and displaying text. Then when you click on the X or click on the background the modal goes away. But I might want to use the modal BEHAVIOR with different HTML inside of it each time. I want a way to encapsulate the behavior of the modal as an outline, but then customize the CONTENT that the BEHAVIOR wraps each time I call it. That's what transclusion is for.

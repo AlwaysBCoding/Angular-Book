@@ -32,7 +32,9 @@ App.factory("NBAPlayersService", function() {
 App.directive("searchableTable", function() {
 
   return {
-    scope: {},
+    scope: {
+      players: "="
+    },
     restrict: "E",
     template: "<table><tr ng-repeat='player in players'><td>{{player}}</td></tr></table>"
   }
