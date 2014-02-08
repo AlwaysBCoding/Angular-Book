@@ -91,6 +91,8 @@ App.controller "ExampleController",
 
 We can see this in the console too. `angular.element($0).scope().__proto__.message` - calling __proto__ gives us the objects prototype. If you called __proto__ enough times on any angular scope object you would eventually end up on the $rootScope. Since we're only nested one level deep right now we only need to call __proto__ once and we can see that message is defined on it. Awesome.
 
+** NG-REPEAT creates a NEW scope for each repetition that prototypically inherits from it's parent. This is called a child scope **
+
 We can access Services from the Command line as well. First lets abstract our call to players to an NBA Players Service.
 
 App.controller("ExampleController", [

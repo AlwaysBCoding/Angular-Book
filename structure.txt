@@ -1,0 +1,22 @@
+Everything you need to know about AngularJS ( but were never told )
+  - Created by Jordan Leigh ( @AlwaysBCoding )
+
+0 - Introduction
+1 - What is Angular?
+2 - Around the World
+3 - Services
+4 - Angular from the Console
+5 - Custom Directives
+6 - Filters and Modules
+7 - NBA Statistics App
+8 - Some words about Unit Testing
+9 - The Angular testing ecosystem
+10 - TDD in Angular
+11 - Building the NBA Statistics App without the browser
+12 - File structure and organization
+13 - Data modeling
+14 - Wrapping jQuery
+15 - Acknowledgements
+  * The team at 3B
+  * The team at MSG
+  * The team at TSL

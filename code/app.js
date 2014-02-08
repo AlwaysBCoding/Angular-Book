@@ -8,6 +8,14 @@ App.controller("ExampleController", [
   }
 ]);
 
+App.controller("ExampleController2", [
+  "$scope", "NBAPlayersService", "$compile", function($scope, NBAPlayersService, $compile) {
+
+    $scope.players = NBAPlayersService.getPlayers();
+
+  }
+]);
+
 App.factory("NBAPlayersService", function() {
   _players = ["Kevin Durant", "John Wall", "Steph Curry"]
 
@@ -17,6 +25,16 @@ App.factory("NBAPlayersService", function() {
 
   return {
     getPlayers: getPlayers
+  }
+
+});
+
+App.directive("searchableTable", function() {
+
+  return {
+    scope: {},
+    restrict: "E",
+    template: "<table><tr ng-repeat='player in players'><td>{{player}}</td></tr></table>"
   }
 
 });

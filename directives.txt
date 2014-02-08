@@ -1,0 +1,149 @@
+More than you ever wanted to know about Angular Directives
+===================================
+
+I mentioned in the introduction to this book that the things that make Angular hard are the things that make it powerful. Well directives are one of those things. Directives allow you to encapsulate real valid HTML DOM along with it's javascript behavior, zip it up into one package 'the directive' and then pick and choose where you put and interact with it just like playing with Legos.
+
+** Viz of how angular directives compare with jQuery watching **
+
+The secret sauce behind an Angular directive is the $compile function that Angular provides which is used to 'zip up' the DOM with it's Angular behavior and put it into one item that you can call as you please when defining your HTML.
+
+App.directive "SearchableTable", () ->
+
+At the end of the day an Angular Directive is DOM with superpowers. A directive can *be* one of three things.
+1. An HTML element
+  * <searchable-table></searchable-table>
+2. An HTML attribute
+  * <table searchable-table>
+3. An HTML class
+  * <table class="searchable-table">
+
+The way you define *how* your directive gets plugged into the DOM is with the "restrict" attribute
+  restrict: "E"
+  restrict: "A"
+  resrict: "C"
+  restrict: "AC" -> can be an attribute or a class
+
+For the most part Elements and Attributes are the best way to plug your directives into you HTML, but you might find an edge case where using a class makes more sense to you.
+
+Now every directive takes a "template" also. The template is the DOM that you want to render inside of the directive. Lets start with a simple example.
+
+App.directive, "searchableTable", () ->
+  restrict: "E"
+  template: """ <- these are coffeescript heredocs
+                <table><tr><td>1,1</td>1,2<td></tr><tr><td>2,1</td><td>2,2</td></tr></table>
+                """
+
+Note that every directive returns an OBJECT. This object has a lot of attributes that you can set that give the directive its power, and were gonna be having a chat about most of them, but that's all that we're dealing with here. Right now we've learned about two of these possible attributes (restrict and template)
+
+<div ng-controller="ExampleController2">
+  <searchable-table></searchable>
+</div>
+
+
+Note that the *NAME* of the directive is important here. When you plug custom directives in the DOM you call them in dash-case. <searchable-table> but when you DEFINE a directive in your javascript, you need to define it as camelCase. Angular will automatically take a camelCased directive and let you have access to the dash-cased version of it when you plug it into the dom. So if you look at the DOM right now you will see that the HTML template of the directive that we defined is now nested inside of the directive, sucess. If we change the "restrict" attribute to "A" our directive no longer renders the template because it's looking for an attribute. We would have to do <table searchable-table> to get it to work in this case.
+
+<div ng-controller="ExampleController2">
+  <table searchable-table></table>
+</div>
+
+Ok cool, we also have the ability to have the template that we define completely replace the call to the directive in the DOM. Check it out.
+
+App.directive, "searchableTable", () ->
+  restrict: "E"
+  template: """ <- these are coffeescript heredocs
+                <table><tr><td>1,1</td>1,2<td></tr><tr><td>2,1</td><td>2,2</td></tr></table>
+                """
+  replace: true
+
+  <div ng-controller="ExampleController2">
+    <searchable-table></searchable>
+  </div>
+
+As you can see the template completely replaces the custom html tag. We can use this to create perfectly valid HTML even with us initially defining custom markup if need be. Pretty cool.
+
+So far so good, but there's a lot of complexity that's goes into creating these custom directives that we need to carefully navigate. How does a directive get made? One way to look at it is that a directive is a combination of three things zipped together ( DOM, Scope and AngularJS ).
+
+App.controller("ExampleController2", [
+  "$scope", "NBAPlayersService", function($scope, NBAPlayersService) {
+
+    $scope.players = NBAPlayersService.getPlayers()
+
+  }
+]);
+
+App.directive, "searchableTable", () ->
+  restrict: "E"
+  template: """
+                <tbody>
+                  <tr ng-repeat='player in players'>
+                    <td>{{player}}</td>
+                  </tr>
+                </tbody>
+                """
+
+So it looks like we DO have access to the parent scope inside of the directive. Because the players are rendering out correctly, and the players were defined on the controller scope.
+
+PRO TIP: A directive template must have EXACTLY one root element. In this case we have a root element of <tbody> and then ng-repeat the <tr> inside of the <tbody> so everything works fine. If the template started with <tr ng-repeat = "player in players">... it would throw an error. This is because the directive would have MULTIPLE root elements when it gets compiled and this is not allowed in Angular.
+
+This is really important to understand, and one of the more confusing parts of Angular.  A directive _chooses_ between one of three scopes when it is defined. It can either have:
+1. Parent Scope
+2. Child Scope
+3. Isolate Scope
+
+When we defined our directive we never mentioned anything to do with scope, so how did it know to use it's parents scope? Actually by not doing anything we told Angular that we wanted option 1, we wanted the directive to use it's parents scope ( in this case the scope of Example2Controller ). I really wish that Angular made you explicitly define which of these three scopes you wanted the directive to use because it would make things more clear, but just know that by not explicitly saying anything you are telling the directive you want option 1, use the scope of the parent as the scope of the directive.
+
+If we look at the scope in our javascript console. *click on <searchable-table> and do angular.element($0).scope(), we can see that it has the variable 'players' stored on it, because it literally IS the scope of the controller where we defined that variable.
+
+If we wanted option 2, to create a child scope that prototypically inherited from the parent we would need to write scope: true as one of the attributes in the object the directive returns.
+
+App.directive, "searchableTable", () ->
+  scope: true
+  restrict: "E"
+  template: """
+                <tbody>
+                  <tr ng-repeat='player in players'>
+                    <td>{{player}}</td>
+                  </tr>
+                </tbody>
+                """
+
+Notice now that if we click on the searchable-table element and do angular.element($0).scope() in our console we have a scope that doesn't have any varaible 'players' defined on it. BUT since it prototypically inherits from its parent it still can access that variable and render the DOM that we want. Try calling angular.element($0).scope().$parent.players to see the value of players that we rendered.
+
+Actually if you want to think about something cool, think about what 'ng-repeat' actually _is_. Well ng-repeat is a directive! It's an attribute directive (restrict: "A") that uses option 2 (CHILD SCOPE) as its scope, and what it does is create a new directive with another CHILD SCOPE (scope: true) for each iteration. If you click on an individual iteration of the ng-repeat ( in this case a <td> element ) and do `angular.element($0).scope()` you can see that we have a new scope with the value of "player" defined on it. That's how we have access to the player information. if we query for it's parent. `angular.element($0).scope().$parent` that's the scope of the ng-repeat directive itself. And if you call the $parent one more time angular.element($0).scope().$parent.$parent you'll get back to the scope of the controller where we initially defined the players variable. As Jesse Pinkman would say "nested scopes with prototypical inheritance, bitch".
+
+Now there's one more type of scope that a directive can have, and this is an "isolate scope", or sibling scope. Now the isolate scope does NOT prototypically inherit from the value of the controller, it is literally its OWN isolated scope, with no reference to anything else ( except $rootScope of course - because *every* scope inherits from $rootScope at some point ). The way you create a directive with an isolate scope is by setting the value of the scope: attribute to an object. Again, I have no idea why you can't just explicitly define which type of scope it is in English, but say la vie. So think for a second about the implications of this and then lets test it out.
+
+App.directive, "searchableTable", () ->
+  scope: {}
+  restrict: "E"
+  template: """
+                <tbody>
+                  <tr ng-repeat='player in players'>
+                    <td>{{player}}</td>
+                  </tr>
+                </tbody>
+                """
+
+So as you can see our directive renders properly, but the value of players is undefined so there's nothing to ng-repeat and nothing gets rendered. Lets look at the scope of the directive in the console. Click the <searchable-table> and do `angular.element($0).scope()` WAIT WHAT. If you look at the scope that comes back, it IS the controller scope. And it has the players variable defined on it. But how is that possible? The directive clearly ISNT using the controller scope because it didn't have access to the players variable, but as far as we can tell that's the only scope that comes back when we try to query for it from the console. In order to understand what is happening here we have to understand in more depth how exactly a directive is compiled and plugged into the DOM.
+
+The $compile service
+============
+
+Remember that we can view services in our javascript console by calling "get" on the angular injector. `angular.element(document).injector().get("$compile")`
+As we can see, the compile service IS a function, and it takes 5 possible arguments.
+
+Angular will go down your app and look for any and all directives.
+It will then call the COMPILE function on each directive
+It stores an array of all the compiled directives.
+Once it does that it calls the $compile service on all compiled directives and merges them together with their scope to create the DOM that gets plugged into our HTML
+** PRO TIP - angular only calls the compile function ONCE for each directive, even if there are multiple occurances of the directive on the page it is only compiled once. there is no notion of scope in the compile function.
+Once all the directives have been compiled it will go down and find each instance of that directive and call the $compile service to merge the compiled directive template with the scope that the directive is currently in. This will create DOM.
+
+We can gain access to the $rootScope by using Angular's injector. `angular.element(document).injector().get("$rootScope")`
+We can create a new scope by calling $new() on rootScope. What we mean by new scope is just an isolated scope object, not attached to anything else ( other than $rootScope of course ) that we can play around with.
+newScope = `angular.element(document).injector().get("$rootScope").$new()`
+
+The best way to understand this is to do it manually from our javascript console. Lets create a string "<h1>{{message}}</h1>" and store it in the variable messageTemplate.
+Then we can set the 'message' variable on our newScope equal to "Hello, World! - The hard way". `newScope.message = "Hello, World! - The hard way".
+
+Now the challenge is how we can manually take this scope and compile it against this template to create DOM. That's all that we want from Angular is to create DOM, but we HAVE to understand the process angular goes through to do it so we can harness it and use it for good.
