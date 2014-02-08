@@ -1,0 +1,122 @@
+Angular from the Console
+===============
+
+An important ability in the Angular workflow is the ability to quickly explore new ideas and easily debug current ones while the application context is currently in your mind. One of the most valuable ways to do this is by use of the Chrome javascript console. We do this constantly by "console.log()" things that we want to see their value. You can also make a call to the javascript functiong "debugger" which will pause execution of your program and allow you to see the value of any variable in context at the time debugger was called. I personally love to hack around in the Chrome console to test services, scopes and variables manually, and I think it's a really useful tool to have in your workflow. So how do we gain access to the angular context from the console to start exploring?
+
+The first thing to take note of is the expression `angular.element()`. Wrapping a dom object in angular.element() returns an AngularJS object wrapped with jQLite. Note, if the full jQuery library is included anywhere on your page, then angular automatically detects that and wraps the angular.element() call in jQuery itself.
+
+Type the word "document" into your console. You can see that this returns the full tree of your DOM not wrapped in anything. We can wrap the "document" in the angular jQLite by passing it into angular.element(document). Say for example we wanted to find every instance of an h1 tag on our page. normally this would be a bit of a verbose syntax because we would have to call `document.getElementsByTagName("h1")`, this is just normal javascript, but the angular.element wrapper gives us access to the jQuery convenience methods. So in order to find every h1 tag on the page we could call angular.element(document).find("h1") instead.
+
+So... angular.element() is the same as the jQuery $() ?
+Not quite. The angular.element() wrapper provides some custom angular functionality that the jQuery $() wrapper doesn't provide. We can add jQuery to our page and compare. I use a bookmarklet called "jQuerify" that can dynamically load jQuery onto any page when I want to play around with it. You can download the bookmarklet or just include the jQuery library to your project if you want to follow along.
+
+jqd = $(document)
+ad  = angular.element(document)
+
+as you can see jqd has access to _all_ of jQuery's methods, including utilities for making AJAX calls, modifying the DOM and binding event handlers. ad is a lighter version of jQuery that strips out the ajax functionality. angular.element also adds five methods that jQuery doesn't have. They are:
+  injector()
+  scope()
+  controller(name)
+  isolatedScope()
+  inheritedData()
+
+You can try it out by calling those methods on `ad`. Even if you have jQuery included on your page, and angular.element() magically turns into the full jQuery wrapper, it will still include these five methods for you.
+
+Lets modify the DOM a little bit and play around with how we can leverage these methods from the console to give us valuable information we can use in the future.
+<html ng-app="AngularBook">
+  <body>
+    <div ng-controller="ExampleController">
+      <h1>{{message}}</h1>
+      <ul>
+        <li ng-repeat="player in players">
+          <p>{{player}}</p>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
+
+App.controller "ExampleController",
+[
+  "$scope"
+(
+  $scope
+) ->
+
+  $scope.message = "Hello World!"
+  $scope.players = ["Kevin Durant", "John Wall", "Steph Curry"]
+]
+
+Lets go to the console and see that we have our message "Hello World!" displayed on the page. We know that the "Hello World!" message is in the $scope of the Example Controller, but lets see if we can gather that information from the console. First we need to get the angular wrapped dom object for the hello world h1 tag. Then we can call that magical 'scope()' method that angular added onto the jQLite selector for us.
+`hw = angular.element(document).find("h1")`
+`hw.scope()`
+
+Woahh.. That is a funky looking object. This is what an angular scope object looks like, so now you know.
+
+PRO TIP - A really nifty way to quickly access the scope of any object is to first select the element in the DOM. You can either use the magnifying glass in the top left corner of the Chrome Dev Tools or you can manually search for it in the elements pane. Once the element is selected ( there should be a blue line highlighting it ) you have access to it in the Chrome console through the command `$0`. Go ahead and try it out, `$0` should give you the HTML DOM element that you currently have selected. Now in order to view the scope all you have to do is `angular.element($0).scope()` and you can view the scope of whichever element is currently selected.
+
+Lets look at the scope object in a little more detail. There are a bunch of methods that start with $$. These are methods provided by angular, you can call them just like any other method (they just happen to start with two dollar signs). Most of the $$ methods return really scary javascript and you don't ever really need to deal with them. Angular also provides some less scary one $ methods, such as $parent. This will return the parent scope of the selected element. Scope heirarchies in Angular are nested so every scope inherits from another scope which in turn inherits from another scope all the way up the food chain until you reach the $rootScope. The $rootScope is the top level scope that every single scope inherits from. We can find it from the console. If we look at the scope of our h1 element `angular.element(document).find("h1").scope()` and call $parent on it ... we get another scope, but this one doesn't have a $parent method on it, instead it has a $root. This means that it is the rootScope of the application, as you can see it's just like any other scope, it just happens to have the advantage that every other scope in the entire application will inherit from it.
+
+In angular the $rootScope is actually an injectable object, and you can define methods on it that every other scope will automatically have access to. Lets try this out.
+
+App.controller "ExampleController",
+[
+  "$scope",
+  "$rootScope"
+(
+  $scope,
+  $rootScope
+) ->
+
+  $rootScope.message = "This is a message from $rootScope"
+  $scope.players = ["Kevin Durant", "John Wall", "Steph Curry"]
+]
+
+As you can see the message still works. When we call {{message}} from the DOM, we are calling message on the current scope. Since the {{message}} is in plain old DOM inside of a controller the scope of {{message}} is the scope of the controller. There is no other angular code to overwrite that scope. We call "$scope.message", but the message is not found. In javascript, if a method call is not found on an object, the next thing that will happen is it will look for a message of the same name on the PROTOTYPE of the object. I'm sure you've heard the term 'prototypical inheritance' before, and this is great example of it. Every scope prototypically inherits from $rootScope, so you can call methods on any scope that are defined on $rootScope and they will still work. But also you can overwrite variables that have been defined on an objects prototype.
+
+App.controller "ExampleController",
+[
+  "$scope",
+  "$rootScope"
+(
+  $scope,
+  $rootScope
+) ->
+
+  $rootScope.message = "This is a message from $rootScope"
+  $scope.message = "Overwritten yo!"
+
+  $scope.players = ["Kevin Durant", "John Wall", "Steph Curry"]
+]
+
+We can see this in the console too. `angular.element($0).scope().__proto__.message` - calling __proto__ gives us the objects prototype. If you called __proto__ enough times on any angular scope object you would eventually end up on the $rootScope. Since we're only nested one level deep right now we only need to call __proto__ once and we can see that message is defined on it. Awesome.
+
+We can access Services from the Command line as well. First lets abstract our call to players to an NBA Players Service.
+
+App.controller("ExampleController", [
+  "$scope", "$rootScope", "NBAPlayersService", function($scope, $rootScope, NBAPlayersService) {
+    $rootScope.message = "This is a message from $rootScope";
+    $scope.message = "Overwritten yo!"
+    $scope.players = NBAPlayersService.getPlayers()
+  }
+]);
+
+App.factory("NBAPlayersService", function() {
+  _players = ["Kevin Durant", "John Wall", "Steph Curry"]
+
+  getPlayers = function() {
+    return _players
+  }
+
+  return {
+    getPlayers: getPlayers
+  }
+
+});
+
+We store the data in _players, and define a public interface with one method to get access to the list of players. The $scope on the controller calls the public method on the NBAPlayersService and sets players equal to that. If we look at our app we can see that this still works. Lets see how we can play around with this service from the console.
+
+First we're going to need access to the angularjs 'Injector' object. The injector object has a method on its interface called "get" which we can use to gain access to services. So we can access our NBA Players Service with :
+`angular.element(document).injector().get("NBAPlayersService")`
+
+As you can see it's an object that shows us it's public interface that we explicitly defined. If we call getPlayers() we get the list of players that we stored inside the service. This is going to be useful for your angular development as it's often really helpful to play around with your Services interfaces from the command line to test edge cases and debug issues ( but srsly testing ).

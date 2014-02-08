@@ -1,0 +1,27 @@
+<html ng-app="AngularBook">
+
+  <head>
+
+  </head>
+
+  <body>
+
+    <div ng-controller="ExampleController">
+      <h1>{{message}}</h1>
+      <ul>
+        <li ng-repeat="player in players">
+          <p>{{player}}</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-javascripts">
+      <script src="library/1-underscore.min.js"></script>
+      <script src="library/2-angular.min.js"></script>
+      <script src="app.js"></script>
+    </div>
+
+  </body>
+
+</html>
+
