@@ -1,0 +1,55 @@
+SERVICES IN ANGULAR
+=============
+
+We stored our data on the $scope of the controller, but this data is not unique to the context of the scope. The data is a universal truth that every place in our application should have access to. When you're accessing something in one place that needs to be accessed in another, you need to abstract it somewhere. This is where Services come in. A service is an abstraction to provide a single place to define the local storage of your data, and the API to interact with it. In this example we can store the teams in a service and reference the service in the controller to store the value on $scope. The advantage here is that you can use call the service in many different scopes. This works exactly like a Rails model, abstract your data so that you can access it in many different places, but only need to manage it in one.
+
+You can define a service in Angular like this.
+
+App.factory "NbaTeamsService", () ->
+
+  {
+
+  }
+
+* This is super important notice that the Factory returns an OBJECT. The OBJECT that gets returned from a call to .factory IS the API or Public Interface of the Service. It contains a list of all the methods that any object can call on the factory. Lets implement a simple getTeams() method
+
+App.factory "NbaTeamsService", () ->
+
+  _teams = [
+    {city: "Oklahoma City", name: "Thunder", conference: "west"}
+  ]
+
+  getTeams = () ->
+    _teams
+
+  {
+    getTeams: getTeams
+  }
+
+* So we create a _teams data structure to store the Hard Coded list of teams and then a method that simply returns the data structure. Then we EXPLICITLY define on the API that we have a public method called "getTeams" that can be called, and we map it to the getTeams method that we just defined. Now anyone that Injects NbaTeamsService has access to this API, and the data that the API interacts with is constrained by the Service itself.
+
+App.controller "NbaStandingsController",
+[
+  "$scope",
+  "NbaTeamsService"
+(
+  $scope
+  NbaTeamsService
+) ->
+
+  $scope.teams = NbaTeamsService.getTeams()
+]
+
+Look at what the controller was before...
+
+App.controller "NbaStandingsController"
+[
+  "$scope"
+(
+  $scope
+) ->
+
+  scope.teams = [{city: "oklahoma city", name: "thunder", conference: "west"} ... ]
+]
+
+What we've done is created what is called a ViewModel. You can think of these things like Rails models, but the thing you have to remember is that the data in these services has to be kept in sync with the view. So as an input field on the model is changing the data does also, so it has this one really big feature that a typical MVC model doesn't and that's why I normally like to think of them as ViewModels. So we have the ability to get Teams, lets display them...

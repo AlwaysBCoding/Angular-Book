@@ -181,3 +181,5 @@ Transclusion
 
 When I first heard about angular transclusion was kind of the jokey buzzword that everyone used to talk about how confusing their documentation was.
 Angular didn't make it up! It's a real thing. And it's really useful sometimes. Consider the example of making a custom modal directive, seems like a great choice of something to be a reusable component. I want to make a modal that has the behavior of blacking out the screen, putting a dialog box on the screen and displaying text. Then when you click on the X or click on the background the modal goes away. But I might want to use the modal BEHAVIOR with different HTML inside of it each time. I want a way to encapsulate the behavior of the modal as an outline, but then customize the CONTENT that the BEHAVIOR wraps each time I call it. That's what transclusion is for.
+
+*** WRITE ABOUT HOW TO MAKE A CUSTOM MODAL DIRECTIVE

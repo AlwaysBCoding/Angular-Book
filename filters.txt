@@ -1,0 +1,4 @@
+CUSTOM FILTERS
+==========
+
+We want to split the standings into Eastern Conference and Western Conference... But we can also filter by highest to lowest etc...

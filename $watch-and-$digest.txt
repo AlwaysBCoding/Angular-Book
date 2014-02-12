@@ -1,0 +1,7 @@
+$digest()
+=====
+
+$watch()
+=====
+
+Alright lets dig into how these two bad boys work

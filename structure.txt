@@ -17,6 +17,3 @@ Everything you need to know about AngularJS ( but were never told )
 13 - Data modeling
 14 - Wrapping jQuery
 15 - Acknowledgements
-  * The team at 3B
-  * The team at MSG
-  * The team at TSL
