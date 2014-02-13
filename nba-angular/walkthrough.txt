@@ -1,0 +1,56 @@
+* Create the template for the application HTML, Includes, Controller
+* Abstract the _teams data into the service
+
+Note that the data in the _teams variable is never kept out of sync with the view. The idea of Angular is that your data stays sync'd up with your view. Interactions modify the data, and modifications to the data modify the visual representation, but they are two representations of the same thing. They aren't actually but that's the point of Angular! To make it seem that way, so you should act as if they are.
+
+Note that $scope.teams is equal to the return value of the NbaTeamsService interface method getTeams(). The controller will run once top to bottom when the app first gets bootstrapped. The value of teams will be set to the return value of the function and that is it. $scope.teams is not bound to the data, since the teams will never change this is completely fine. But for data that we want kept in sync (like the current rankings of the teams) this will be important to pay attention to.
+
+The challenge: To sort the list and keep the data in sync so that we can persist it in the user's browser. (Save Rankings)
+
+One way to implement this kind of functionality would be with "sortable" library from jQuery UI. That's the solution that is comfortable, that makes sense, that we know how to do. But I promise you, that the angular way is better, it just requires an open mind. Lets look at how we would implement this with jQuery and then slowly abstract it away until we're left with nothing but angular.
+
+So now we have 4 libraries, underscore, jQuery, jQuery UI and Angular - These are the only 4 external libraries that we're going to use in this tutorial, the rest will be Angular code that I write myself.
+
+So in order to implement this in jQuery we would give the list a class, we would watch the class with jQuery and capture the "sorted" event.
+$(".sortable").sortable() ; awesome, and it just works.  If we browse long enough we see that the correct method to use is "update", which triggers when the user stops sorting and the dom positions have changed. So what we want to do is have the numbers on the rankings update in real time. We can run a function on this update that selects all the elements in the dom that match a list item in the list. Then use underscore js to iterate through them and update the ranking number. But remember the ranking number is part of one tag in the dom, so yikes, this is going to be a little bit tricky.
+
+$(function() {
+  $(".sortable").sortable({
+    update: function(event, ui) {
+      // TBA: Run Update Here
+    }
+  });
+});
+
+I query up the DOM to get the ul in context and find the children
+$(function() {
+  $(".sortable").sortable({
+    update: function(event, ui) {
+      rankedTeams = ui.item.parent().find("li.nba-team");
+      console.log(rankedTeams);
+    }
+  });
+});
+
+Then we iterate through them amending their ranking each time. It's going to be complicated... We need to parse out the data somehow. we can use the index of the iteration to build up the ranking, then parse the name of the team to put on the end of it. We could use the regular expression /[)].*$/ to parse out the parenthesis and the team name, then replace it with the index of the iteration plus one. ...
+
+We have NO ACCESS to the data backing the visual representation of the list. Our only knowledge of the state of this ranking is how the visual representation. So things like iterating and changing that we should - and could - easily be doing on data structures, are done on the DOM and require complicated solutions. We can pass the idea of data into the dom using data- attributes. <li data-ranking="x" data-team="x" /> and make parsing the data out and putting it back in easier for us. You can even render CSS pseudo selectors directly out of the data-attribute and that works too. But there is something that is just wrong about doing all of this. We are doing our data transformation and manipulation on the same objects that are meant for visual representations. It's like putting CSS in an API. All we want is to act on the data, and then the HTML should show us the visual representation of that data that we define, but it should do thta automatically. As programmers we should manipulate the data.
+
+It's like being at a frat party in college. jQuery is this guy who was 21 years old. You needed beer to have a party the same way you need DOM manipulation to make dynamic web sites. And there was nothing wrong with jQuery, he was a cool guy, but it was maybe a little weird he was three years older than you. But anyway you needed alcohol at the party and he was the only one who could buy it so you kept him around. Well Angular is one of your best friends who goes out and contacts someone called the "captain" and buys a fake ID. Now Angular can buy beer too. Granted it's not the same thing as actually being 21, but he can get alcohol and that's what really matters. Well now all of the sudden, you don't NEED jQuery to have a party, you can just have Angular go to the store and pick up the booze. Angular fits in better with you, he's a more natural pair, he lives on your floor and he's one of your best friends albeit a bit of a prick sometimes ( terrible documentation ), but there's no doubt he brings hotter girls around. There's nothing wrong with jQuery, he's still a cool guy, but you don't need him anymore to have a party.
+
+* If you're reading this book outside the United States, there's a very good chance this next paragraph is going to make absolutely no sense to you. Just know that the USA has a really indefensibly bad policy in place that you need to be 21 to purchase or consume alcohol. For more details on why this law exists and why it is so harmful for society checkt out page 152.
+
+The first thing that we want to do is abstract this functionality into an angular directive.
+
+App.directive("sortableList", function() {
+  return {
+
+    restrict: "A",
+    link: function(scope, element, attrs) {
+      element.sortable()
+    }
+
+  }
+});
+
+The class "sortable" goes away, and we add our attribute directive sortable-list that we now have full control over and have as part of the angular process. This is the idea of 'wrapping' jQuery or some other object in a directive. Putting it's functionality in a library. Now essentially all we're using jQuery for is it's API to call sortable on objects, and not to watch the DOM or handle events.

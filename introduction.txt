@@ -1,5 +1,11 @@
 The Theory Behind this Book
-=================
+===========================
+
+I studied Accounting and the Arabic Language in college. I only came to programming when I was 22. Once I had a year or so of code under my belt I began to think a lot about how people learn language. If there were ideas common to learning Arabic and learning Ruby that were similar and what exactly that abstraction entailed. I came upon a realization. The way we teach Arabic is wrong. There is a focus on learning "what" certain words or phrases mean. what does x mean, what does y mean. But really the optimization is to explain the underlying components that allow someone to craft that meaning for themselves. And it occurred to me that this was the same for learning programming languages as well. So much time is spent talking about the language, but not very much time is spent explaining the language.
+
+There is a huge difference between talking and explaining. Most books that I read simply talk about the language in question. It is tricky because most authors believe they are explaining something when really they are not. To talk about something is to state true facts about it. To explain something is to craft enough context that the target of your explanation could draw these conclusions should you choose to not mention them. To most the idea of an explanation starts at the topic in question. It starts at the language and then they talk about it. They describe it, they show how you do something. They say why this thing happens this way. But this is not an explanation. An explanation requires that you leave your own body and look at the language from the perspective of an observer. You are not allowed to have the context in your head that you have meticulously earned. I think that's why it is so hard for authors to write good introductory resources. To explain is not to give meaning, but to show how to craft the very concept of meaning. There is a difference between stating facts, and providing a mechanism to allow the natural realization of facts, and it is indirect. To make someone understand something is not to give someone that piece of information. In fact, it is the very opposite. It is to give the person everything EXCEPT that piece of information. And now the person will see where the hole is, they will understand the scope of the negative space in which they're dealing with. And they will know the solution by even seeing it's shadow because the gap is so well defined. From this realization I have come to the conclusion that programming books are flawed, because they are designed to be a transfer of knowledge in the 1:1 ratio of providing puzzle pieces without proper context. I have a theory as to why this is. ->
+
+There is a fear for calling people out. There is a fear of calling something that is technically correct bad. And an absolute paralysis of acknowledging something that is not technically correct as good. This has lead to a culture where the quality of something becomes defined by it's level of technical correctness. The incentives for writing a book are self-recognition. Programming is an art where it is challenging to show competence and progress and therefore receive recognition. It is incredibly challenging, time consuming and vicious to get to the level of skill needed to be in the top 10%. There are only a finite number of resources that get created ( An introduction, whirlwind tour, and in depth book) for each language maybe? So who are the people that end up writing these books? The smartest. The most technically correct. They are the FARTHEST from the beginner's mindset. They are the least qualified to create introductory level resources. I believe this to be an exploitable market inefficiency. The first question is how to craft a resource that excels where these other ones fail.
 
 This is as much a book about AngularJS as it is a book about self expression.
 
@@ -13,13 +19,4 @@ They are experts, they can see patterns with less information and therefore buil
 
 This is not an exhaustive documentation of every module in AngularJS, it is a story of how to use AngularJS to create things. I don't cover everything, but I cover everything that you need to create meaning.
 
-Questions you might have
-===============
-- Why is this book written in coffeescript?
-  - Because it's more readable
-
-- Why do examples in this book use the underscore.js library by default?
-  - Because it's more readable
-
-- Why are you writing a book with only 2 years of coding experience?
-  - Because I'm closer to the beginner mindset and think that gives me an advantage
+In this book I want to explain how to craft meaning in AngularJS. In doing so I deviate from the formula of programming literature that you might be familiar with. I believe that these deviations are positive. The first of these will be readily obvious. The entire book is written in Coffeescript. I made this decision because Coffeescript is more readable. The book also uses the underscore.js library throughout. I made this decision because the underscore library makes the code more readable. I also chose to write this book while I myself am not an expert at AngularJS. I think this gives me a very large advantage over the other Angular resources on the market.

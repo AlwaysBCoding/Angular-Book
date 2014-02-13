@@ -1,0 +1,31 @@
+<html ng-app="nbaAngular">
+
+	<head>
+	</head>
+
+	<body>
+
+		<div ng-controller="TeamRankingsController">
+
+			<!-- <ul class="team-list">
+				<li ng-repeat="team in teams">
+					<span>{{team.city}} {{team.name}}</span>
+				</li>
+			</ul> -->
+
+			<ul class="team-ranking-list sortable" sortable-list>
+			</ul>
+
+		</div>
+
+		<div class="footer-javascripts">
+			<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+			<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+			<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+			<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
+			<script type="text/javascript" src="./app.js"></script>
+		</div>
+
+	</body>
+
+</html>
